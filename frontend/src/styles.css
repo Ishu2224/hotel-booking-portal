@@ -1,0 +1,308 @@
+/* ───────── Padav design tokens ─────────
+   Indigo ink for structure, peacock teal for actions, marigold for the one thing that needs attention. */
+:root {
+  --ink: #14183b;
+  --ink-2: #3a4170;
+  --muted: #646b8c;
+  --indigo: #1c2260;
+  --indigo-deep: #0f1338;
+  --peacock: #0b7a7c;
+  --peacock-dark: #096567;
+  --peacock-soft: #dcf2f0;
+  --marigold: #f5a623;
+  --marigold-deep: #b9740a;
+  --marigold-soft: #fff0d0;
+  --mist: #eff3f9;
+  --paper: #ffffff;
+  --line: #dbe1ec;
+  --rose: #c2334f;
+  --rose-soft: #fde7eb;
+  --ok: #17794f;
+
+  --font-display: 'Bricolage Grotesque', 'Trebuchet MS', system-ui, sans-serif;
+  --font-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --shadow-lift: 0 18px 40px -18px rgba(20, 24, 59, 0.45);
+  --shadow-soft: 0 2px 10px -4px rgba(20, 24, 59, 0.25);
+  --focus: 0 0 0 3px rgba(245, 166, 35, 0.55);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--mist);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--peacock-dark);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: 8px;
+}
+
+.wrap {
+  width: min(1180px, 100% - 2.5rem);
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ───────── Buttons ───────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 46px;
+  padding: 0.65rem 1.25rem;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.97rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s var(--ease), background-color 0.18s, box-shadow 0.18s, opacity 0.18s;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--peacock);
+  color: #fff;
+  box-shadow: 0 8px 18px -10px rgba(11, 122, 124, 0.9);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--peacock-dark);
+}
+
+.btn-accent {
+  background: var(--marigold);
+  color: var(--indigo-deep);
+  box-shadow: 0 8px 18px -10px rgba(217, 138, 0, 0.9);
+}
+
+.btn-accent:hover:not(:disabled) {
+  background: #ffb73d;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1.5px var(--ink-2);
+}
+
+.btn-danger {
+  background: var(--rose);
+  color: #fff;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #a82a42;
+}
+
+.spinner {
+  width: 1.05em;
+  height: 1.05em;
+  border-radius: 50%;
+  border: 2.5px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ───────── Forms ───────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.field > label,
+.field > .label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.6rem 0.85rem;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input::placeholder {
+  color: #9aa1bb;
+}
+
+.input:hover {
+  border-color: #b9c2d6;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--peacock);
+  box-shadow: var(--focus);
+}
+
+.input.invalid {
+  border-color: var(--rose);
+  background: #fff9fa;
+}
+
+.error-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--rose);
+  animation: nudge 0.25s var(--ease);
+}
+
+/* ───────── Small pieces ───────── */
+.alert {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-size: 0.94rem;
+  font-weight: 500;
+}
+
+.alert strong {
+  display: block;
+  font-weight: 700;
+}
+
+.alert-error {
+  background: var(--rose-soft);
+  color: #7e1b2e;
+}
+
+.alert-warn {
+  background: var(--marigold-soft);
+  color: #6d4300;
+}
+
+.alert-ok {
+  background: var(--peacock-soft);
+  color: #064c4d;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--mist);
+  color: var(--ink-2);
+}
+
+.skeleton {
+  background: linear-gradient(100deg, #e3e9f3 30%, #f3f6fb 50%, #e3e9f3 70%);
+  background-size: 220% 100%;
+  animation: shimmer 1.3s linear infinite;
+  border-radius: 10px;
+}
+
+/* ───────── Keyframes ───────── */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -220% 0;
+  }
+}
+
+@keyframes nudge {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

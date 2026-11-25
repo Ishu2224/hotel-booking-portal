@@ -1,0 +1,120 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 50;
+  padding: 0.6rem 1rem;
+  background: var(--marigold);
+  color: var(--indigo-deep);
+  font-weight: 700;
+  border-radius: 10px;
+  transition: top 0.2s;
+}
+
+.skip:focus {
+  top: 0.75rem;
+}
+
+.top {
+  position: relative;
+  z-index: 10;
+  background: var(--indigo-deep);
+  color: #fff;
+}
+
+.top-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 66px;
+  gap: 1rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  transition: transform 0.4s var(--ease);
+}
+
+.brand:hover .mark {
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+nav a {
+  position: relative;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  color: #c9cff5;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+nav a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+nav a.on {
+  color: #fff;
+}
+
+nav a.on::after {
+  content: '';
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: 2px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--marigold);
+}
+
+.foot {
+  padding: 2rem 0 2.4rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .brand-name {
+    font-size: 1.35rem;
+  }
+  nav a {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.9rem;
+  }
+}

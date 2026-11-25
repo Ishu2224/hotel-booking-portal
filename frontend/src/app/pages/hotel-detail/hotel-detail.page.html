@@ -1,0 +1,156 @@
+@if (hotel(); as h) {
+  <section class="hero">
+    <app-hotel-scene [location]="h.location" [animated]="true" />
+    <div class="shade"></div>
+    <div class="wrap titlebar">
+      <a class="back" routerLink="/" [queryParams]="backParams()">All stays</a>
+      <p class="loc">{{ h.location }}</p>
+      <h1>{{ h.name }}</h1>
+    </div>
+  </section>
+
+  <div class="wrap layout">
+    <div class="info">
+      <p class="desc">{{ h.description }}</p>
+
+      <dl class="facts">
+        <div><dt>Room</dt><dd>{{ h.roomType }}</dd></div>
+        <div><dt>Sleeps</dt><dd>Up to {{ h.maxGuestsPerRoom }} guests</dd></div>
+        <div><dt>Rooms in hotel</dt><dd>{{ h.totalRooms }}</dd></div>
+        <div><dt>From</dt><dd>{{ h.pricePerNight | inr }} per night</dd></div>
+      </dl>
+
+      <h2>What’s included</h2>
+      <ul class="amen">
+        @for (a of h.amenities; track a) {
+          <li>{{ a }}</li>
+        }
+      </ul>
+
+      <aside class="weekend">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        <p>Friday and Saturday nights carry a weekend surcharge. It’s shown on its own line, night by night, before you confirm.</p>
+      </aside>
+
+      <h2>How booking works</h2>
+      <ol class="steps">
+        <li><b>Pick your dates.</b> The price appears night by night before you commit.</li>
+        <li><b>Add the guest.</b> Confirm, and your booking reference is ready straight away.</li>
+        <li><b>Manage it later.</b> With the reference and your email you can view the booking, download the voucher, or cancel.</li>
+      </ol>
+    </div>
+
+    <aside class="plan" aria-labelledby="plan-title">
+      <h2 id="plan-title">Plan your stay</h2>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="dates">
+          <div class="field">
+            <label for="d-in">Check-in</label>
+            <input id="d-in" class="input" type="date" formControlName="checkInDate" [min]="today" [class.invalid]="dateMessage()" />
+          </div>
+          <div class="field">
+            <label for="d-out">Check-out</label>
+            <input id="d-out" class="input" type="date" formControlName="checkOutDate" [min]="form.controls.checkInDate.value || today" [class.invalid]="dateMessage()" />
+          </div>
+        </div>
+
+        <div class="stepper" [class.off]="!form.controls.checkInDate.value">
+          <span id="nights-label">Length of stay</span>
+          <div class="step" role="group" aria-labelledby="nights-label">
+            <button type="button" (click)="stepNights(-1)" [disabled]="nights() <= 1" aria-label="One night less">−</button>
+            <output aria-live="polite">{{ nights() }} {{ nights() === 1 ? 'night' : 'nights' }}</output>
+            <button type="button" (click)="stepNights(1)" [disabled]="!form.controls.checkInDate.value || nights() >= 30" aria-label="One night more">+</button>
+          </div>
+        </div>
+
+        @if (dateMessage(); as msg) {
+          <p class="error-text" role="alert">{{ msg }}</p>
+        }
+
+        <div class="avail" aria-live="polite">
+          @if (checking()) {
+            <div class="skeleton line"></div>
+          } @else if (left() === 0) {
+            <div class="alert alert-error">
+              <div><strong>Sold out for these dates</strong>Try moving your stay by a day or two.</div>
+            </div>
+          } @else if (left() !== null) {
+            <div class="alert" [class.alert-warn]="scarce()" [class.alert-ok]="!scarce()">
+              <div>
+                <strong>{{ left() === 1 ? 'Last room available' : left() + ' rooms available' }}</strong>
+                {{ scarce() ? 'These dates are filling up, so book soon.' : 'There’s room for these dates.' }}
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (quote(); as q) {
+          <div class="price" [class.stale]="checking()">
+            <app-price-breakdown [price]="q" />
+          </div>
+        } @else if (!dateMessage() && !checking()) {
+          <p class="prompt">Choose your dates and the full price appears here, night by night.</p>
+        }
+
+        <fieldset class="guest" [disabled]="submitting()">
+          <legend>Who’s staying?</legend>
+          <div class="field">
+            <label for="g-name">Guest name</label>
+            <input id="g-name" class="input" formControlName="guestName" autocomplete="name" placeholder="As on your ID" [class.invalid]="errorFor('guestName')" [attr.aria-invalid]="!!errorFor('guestName')" />
+            @if (errorFor('guestName'); as e) {
+              <span class="error-text">{{ e }}</span>
+            }
+          </div>
+          <div class="field">
+            <label for="g-email">Email</label>
+            <input id="g-email" class="input" type="email" formControlName="guestEmail" autocomplete="email" placeholder="name@example.com" [class.invalid]="errorFor('guestEmail')" [attr.aria-invalid]="!!errorFor('guestEmail')" />
+            @if (errorFor('guestEmail'); as e) {
+              <span class="error-text">{{ e }}</span>
+            } @else {
+              <span class="hint">You’ll need this email, plus your reference, to view or cancel the booking.</span>
+            }
+          </div>
+        </fieldset>
+
+        @if (bookingError(); as err) {
+          <div class="alert" [class.alert-warn]="err.status === 409" [class.alert-error]="err.status !== 409" role="alert">
+            <div>
+              <strong>{{ err.status === 409 ? 'Those dates just filled up' : 'We couldn’t complete the booking' }}</strong>
+              {{ err.message }}
+            </div>
+          </div>
+        }
+
+        <button class="btn btn-primary confirm" type="submit" [disabled]="submitting() || left() === 0">
+          @if (submitting()) {
+            <span class="spinner" aria-hidden="true"></span> Booking your room
+          } @else {
+            Confirm booking
+            @if (quote(); as q) {
+              <span class="amt">{{ q.totalAmount | inr }}</span>
+            }
+          }
+        </button>
+        <p class="fine">No payment is taken online.</p>
+      </form>
+    </aside>
+  </div>
+} @else if (loadError(); as err) {
+  <div class="wrap fail">
+    <div class="alert alert-error" role="alert">
+      <div><strong>This hotel isn’t available</strong>{{ err }}</div>
+    </div>
+    <a class="btn btn-primary" routerLink="/">Browse all stays</a>
+  </div>
+} @else {
+  <div class="hero skeleton" aria-busy="true"></div>
+  <div class="wrap layout">
+    <div class="info">
+      <div class="skeleton line big"></div>
+      <div class="skeleton line"></div>
+      <div class="skeleton line short"></div>
+    </div>
+    <div class="plan"><div class="skeleton line big"></div><div class="skeleton line"></div></div>
+  </div>
+}

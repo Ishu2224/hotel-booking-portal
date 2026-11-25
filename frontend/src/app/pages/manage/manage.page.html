@@ -1,0 +1,94 @@
+<section class="wrap manage">
+  <div class="lookup">
+    <h1>Find your booking</h1>
+    <p class="lede">Enter the reference from your confirmation and the email you booked with. We ask for both to keep your booking private.</p>
+
+    <form [formGroup]="form" (ngSubmit)="find()" novalidate>
+      <div class="field">
+        <label for="m-ref">Booking reference</label>
+        <input id="m-ref" class="input ref" formControlName="reference" placeholder="TC-2026-K7XM3P" autocomplete="off" autocapitalize="characters" spellcheck="false" [class.invalid]="fieldError('reference')" />
+        @if (fieldError('reference'); as e) {
+          <span class="error-text">{{ e }}</span>
+        }
+      </div>
+      <div class="field">
+        <label for="m-email">Email</label>
+        <input id="m-email" class="input" type="email" formControlName="email" placeholder="name@example.com" autocomplete="email" [class.invalid]="fieldError('email')" />
+        @if (fieldError('email'); as e) {
+          <span class="error-text">{{ e }}</span>
+        }
+      </div>
+
+      @if (error(); as err) {
+        <div class="alert" [class.alert-warn]="err.status === 404" [class.alert-error]="err.status !== 404" role="alert">
+          <div>
+            <strong>{{ err.status === 404 ? 'No booking found' : 'Something went wrong' }}</strong>
+            {{ err.message }}
+            @if (err.status === 404) {
+              Check the reference for typos and use the email from your booking.
+            }
+          </div>
+        </div>
+      }
+
+      <button class="btn btn-primary" type="submit" [disabled]="searching()">
+        @if (searching()) {
+          <span class="spinner" aria-hidden="true"></span> Looking it up
+        } @else {
+          Find booking
+        }
+      </button>
+    </form>
+  </div>
+
+  <div class="result" aria-live="polite">
+    @if (booking(); as b) {
+      <app-booking-ticket [booking]="b" />
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" (click)="download()" [disabled]="downloading()">
+          @if (downloading()) {
+            <span class="spinner" aria-hidden="true"></span> Preparing voucher
+          } @else {
+            Download voucher
+          }
+        </button>
+
+        @if (b.cancellable) {
+          @if (!confirmingCancel()) {
+            <button type="button" class="btn btn-ghost danger" (click)="confirmingCancel.set(true)">Cancel booking</button>
+          }
+        } @else {
+          <a class="btn btn-accent" routerLink="/">Book another stay</a>
+        }
+      </div>
+
+      @if (confirmingCancel()) {
+        <div class="confirm" role="alertdialog" aria-labelledby="cancel-title">
+          <div>
+            <h2 id="cancel-title">Cancel this stay?</h2>
+            <p>The room goes back on sale straight away, and you’d need to book again to get it back.</p>
+          </div>
+          <div class="confirm-actions">
+            <button type="button" class="btn btn-ghost" (click)="confirmingCancel.set(false)" [disabled]="cancelling()">Keep booking</button>
+            <button type="button" class="btn btn-danger" (click)="cancel()" [disabled]="cancelling()">
+              @if (cancelling()) {
+                <span class="spinner" aria-hidden="true"></span> Cancelling
+              } @else {
+                Yes, cancel booking
+              }
+            </button>
+          </div>
+        </div>
+      }
+    } @else if (!error()) {
+      <div class="hint">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="6" y="14" width="52" height="36" rx="8" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="4 5" />
+          <circle cx="32" cy="32" r="8" fill="#f5a623" />
+        </svg>
+        <p>Your booking will appear here as a ticket, with its price and a voucher you can download.</p>
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,47 @@
+@if (booking(); as b) {
+  @if (fresh() && b.status === 'CONFIRMED') {
+    <app-petals />
+  }
+  <section class="wrap done">
+    @if (b.status === 'CONFIRMED') {
+      <h1>You’re booked, {{ firstName() }}.</h1>
+      <p class="lede">
+        A room at <strong>{{ b.hotelName }}</strong> is yours for {{ b.nights }} {{ b.nights === 1 ? 'night' : 'nights' }}. Save the reference
+        below: with your email, it lets you view, download or cancel this booking.
+      </p>
+    } @else {
+      <h1>This booking is cancelled.</h1>
+      <p class="lede">The room has been released. You can book again any time.</p>
+    }
+
+    <app-booking-ticket [booking]="b" />
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" (click)="download()" [disabled]="downloading()">
+        @if (downloading()) {
+          <span class="spinner" aria-hidden="true"></span> Preparing voucher
+        } @else {
+          Download voucher
+        }
+      </button>
+      <button type="button" class="btn btn-ghost" (click)="copyReference()">Copy reference</button>
+      <a class="btn btn-ghost" routerLink="/manage" [queryParams]="{ ref: b.bookingReference }">Manage or cancel</a>
+    </div>
+    <p class="again">Planning another trip? <a routerLink="/">Find a stay</a></p>
+  </section>
+} @else if (error(); as err) {
+  <section class="wrap done">
+    <h1>We couldn’t load your booking</h1>
+    <div class="alert alert-error" role="alert">
+      <div>{{ err.message }}</div>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" routerLink="/manage" [queryParams]="{ ref: ref() }">Look it up with your email</a>
+    </div>
+  </section>
+} @else {
+  <section class="wrap done" aria-busy="true">
+    <div class="skeleton bar"></div>
+    <div class="skeleton tick"></div>
+  </section>
+}

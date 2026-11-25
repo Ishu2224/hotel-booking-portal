@@ -1,0 +1,122 @@
+<section class="hero">
+  <div class="wrap hero-in">
+    <div class="intro">
+      <h1>Where to next?</h1>
+      <p class="lede">
+        Eight stays, from the snow line in Manali to the backwaters of Kochi. Add your dates and we’ll show which rooms are
+        free.
+      </p>
+    </div>
+
+    <svg class="sunrise" viewBox="0 0 360 220" aria-hidden="true">
+      <g class="rings" fill="none" stroke="#f5a623">
+        <circle cx="180" cy="200" r="150" stroke-opacity=".16" stroke-width="2" />
+        <circle cx="180" cy="200" r="118" stroke-opacity=".3" stroke-width="2.5" />
+        <circle cx="180" cy="200" r="86" stroke-opacity=".5" stroke-width="3" />
+      </g>
+      <circle class="disc" cx="180" cy="200" r="58" fill="#f5a623" />
+      <path d="M0 200 H360 V220 H0Z" fill="#0f1338" />
+      <path d="M40 206 h90 M210 206 h110" stroke="#7fd6d0" stroke-width="2.5" stroke-linecap="round" opacity=".7" />
+    </svg>
+  </div>
+
+  <form class="wrap finder" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field where">
+      <label for="location">Where</label>
+      <input id="location" class="input" formControlName="location" list="cities" placeholder="City or area, e.g. Goa" autocomplete="off" />
+      <datalist id="cities">
+        @for (c of cities; track c) {
+          <option [value]="c"></option>
+        }
+      </datalist>
+    </div>
+    <div class="field">
+      <label for="checkIn">Check-in</label>
+      <input id="checkIn" class="input" type="date" formControlName="checkInDate" [min]="today" [class.invalid]="formError()" />
+    </div>
+    <div class="field">
+      <label for="checkOut">Check-out</label>
+      <input id="checkOut" class="input" type="date" formControlName="checkOutDate" [min]="form.controls.checkInDate.value || today" [class.invalid]="formError()" />
+    </div>
+    <button class="btn btn-accent go" type="submit">Show stays</button>
+    @if (formError(); as err) {
+      <p class="error-text form-error" role="alert">{{ err }}</p>
+    }
+  </form>
+
+  <div class="wrap chips" aria-label="Popular destinations">
+    <span class="chips-label">Jump to</span>
+    @for (c of cities; track c) {
+      <button type="button" class="pill" [class.on]="applied().location === c" (click)="pickCity(c)">{{ c }}</button>
+    }
+  </div>
+</section>
+
+<section class="wrap results" aria-live="polite">
+  @if (loading()) {
+    <div class="grid" aria-busy="true" aria-label="Loading stays">
+      @for (s of skeletons; track s) {
+        <div class="sk">
+          <div class="skeleton sk-pic"></div>
+          <div class="skeleton sk-line w60"></div>
+          <div class="skeleton sk-line w90"></div>
+          <div class="skeleton sk-line w40"></div>
+        </div>
+      }
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="state">
+      <div class="alert alert-error" role="alert">
+        <div>
+          <strong>We couldn’t load the hotels</strong>
+          {{ err }}
+        </div>
+      </div>
+      <button class="btn btn-primary" type="button" (click)="submit()">Try again</button>
+    </div>
+  } @else if (hotels(); as list) {
+    @if (list.length === 0) {
+      <div class="state empty">
+        <h2>No stays match that search</h2>
+        <p>Try a different city, or clear the filters to see every hotel.</p>
+        <button class="btn btn-primary" type="button" (click)="clearAll()">Show all stays</button>
+      </div>
+    } @else {
+      <div class="bar">
+        <h2>{{ summary(list.length) }}</h2>
+        @if (hasFilters()) {
+          <button type="button" class="link" (click)="clearAll()">Clear filters</button>
+        }
+      </div>
+      <p class="note">Friday and Saturday nights cost a little more. You’ll see the exact price, night by night, before you book.</p>
+
+      <div class="grid">
+        @for (h of list; track h.id; let i = $index) {
+          @let avail = availability(h);
+          <a class="card" [class.out]="avail?.tone === 'out'" [style.--i]="i" [routerLink]="['/hotels', h.id]" [queryParams]="detailParams()">
+            <div class="pic">
+              <app-hotel-scene [location]="h.location" />
+              @if (avail; as a) {
+                <span class="badge" [class]="a.tone">{{ a.text }}</span>
+              }
+            </div>
+            <div class="body">
+              <p class="loc">{{ h.location }}</p>
+              <h3>{{ h.name }}</h3>
+              <p class="room">{{ h.roomType }}, sleeps {{ h.maxGuestsPerRoom }}</p>
+              <ul class="amen">
+                @for (a of h.amenities.slice(0, 2); track a) {
+                  <li>{{ a }}</li>
+                }
+                @if (h.amenities.length > 2) {
+                  <li class="more">+{{ h.amenities.length - 2 }} more</li>
+                }
+              </ul>
+              <p class="price"><strong>{{ h.pricePerNight | inr }}</strong> <span>per night</span></p>
+            </div>
+          </a>
+        }
+      </div>
+    }
+  }
+</section>

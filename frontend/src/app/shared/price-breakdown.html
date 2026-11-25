@@ -1,0 +1,31 @@
+@let p = price();
+<section class="pb" aria-label="Price breakdown">
+  <ol class="nights">
+    @for (n of p.nightlyBreakdown; track n.date; let i = $index) {
+      <li class="night" [class.weekend]="n.weekendNight" [style.--i]="i">
+        <span class="when"><b>{{ weekday(n.date) }}</b> {{ dayMonth(n.date) }}</span>
+        @if (n.weekendNight) {
+          <span class="tag">Weekend +{{ p.weekendSurchargePercent }}%</span>
+        }
+        <span class="amt">{{ n.price | inr }}</span>
+      </li>
+    }
+  </ol>
+
+  <dl class="sum">
+    <div>
+      <dt>{{ p.nights }} {{ p.nights === 1 ? 'night' : 'nights' }} at {{ p.pricePerNight | inr }}</dt>
+      <dd>{{ p.baseAmount | inr }}</dd>
+    </div>
+    @if (p.surchargeAmount > 0) {
+      <div class="surcharge">
+        <dt>Weekend surcharge on {{ p.weekendNights }} {{ p.weekendNights === 1 ? 'night' : 'nights' }}</dt>
+        <dd>+{{ p.surchargeAmount | inr }}</dd>
+      </div>
+    }
+    <div class="total">
+      <dt>Total</dt>
+      <dd aria-live="polite">{{ shownTotal() | inr }}</dd>
+    </div>
+  </dl>
+</section>

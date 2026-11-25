@@ -1,0 +1,31 @@
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a routerLink="/" class="brand" aria-label="Padav, home">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="17" r="7.5" fill="#f5a623" />
+        <rect x="2" y="17" width="28" height="13" fill="#1c2260" />
+        <path d="M4 20.5h24" stroke="#7fd6d0" stroke-width="2" stroke-linecap="round" />
+        <path d="M9 25.5h14" stroke="#7fd6d0" stroke-width="2" stroke-linecap="round" opacity=".6" />
+      </svg>
+      <span class="brand-name">Padav</span>
+    </a>
+    <nav aria-label="Main">
+      <a routerLink="/" routerLinkActive="on" [routerLinkActiveOptions]="{ exact: true }">Find a stay</a>
+      <a routerLink="/manage" routerLinkActive="on">My booking</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <router-outlet />
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Padav is a demo booking portal. No payment is taken and no account is needed.</p>
+  </div>
+</footer>
+
+<app-toast-host />

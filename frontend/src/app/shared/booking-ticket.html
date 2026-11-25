@@ -1,0 +1,61 @@
+@let b = booking();
+<article class="ticket" [class.cancelled]="cancelled()">
+  <div class="main">
+    <header>
+      <h2>{{ b.hotelName }}</h2>
+      <p class="where">{{ b.hotelLocation }}, {{ b.roomType }}</p>
+    </header>
+
+    <div class="stay">
+      <div class="day">
+        <span class="k">Check-in</span>
+        <strong>{{ dayMonth(b.checkInDate) }}</strong>
+        <span class="wk">{{ weekdayLong(b.checkInDate) }}</span>
+      </div>
+      <div class="span" aria-label="{{ b.nights }} nights">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z" fill="currentColor" /></svg>
+        <b>{{ b.nights }}</b>
+        <span>{{ b.nights === 1 ? 'night' : 'nights' }}</span>
+      </div>
+      <div class="day">
+        <span class="k">Check-out</span>
+        <strong>{{ dayMonth(b.checkOutDate) }}</strong>
+        <span class="wk">{{ weekdayLong(b.checkOutDate) }}</span>
+      </div>
+    </div>
+
+    <dl class="facts">
+      <div>
+        <dt>Guest</dt>
+        <dd>{{ b.guestName }}</dd>
+      </div>
+      <div>
+        <dt>Email</dt>
+        <dd class="email">{{ b.guestEmail }}</dd>
+      </div>
+      <div>
+        <dt>{{ cancelled() ? 'Amount (not charged)' : 'Total amount' }}</dt>
+        <dd class="money">{{ b.price.totalAmount | inr }}</dd>
+      </div>
+    </dl>
+
+    <details class="more">
+      <summary>See the price night by night</summary>
+      <app-price-breakdown [price]="b.price" />
+    </details>
+  </div>
+
+  <aside class="stub" aria-label="Booking reference and status">
+    <span class="k">Booking reference</span>
+    <strong class="ref">{{ b.bookingReference }}</strong>
+    @if (cancelled()) {
+      <div class="stamp bad" role="img" aria-label="Status: cancelled">Cancelled</div>
+      @if (b.cancelledAt) {
+        <span class="stamp-note">on {{ dateTime(b.cancelledAt) }}</span>
+      }
+    } @else {
+      <div class="stamp good" role="img" aria-label="Status: confirmed">Confirmed</div>
+      <span class="stamp-note">booked {{ dateTime(b.createdAt) }}</span>
+    }
+  </aside>
+</article>
